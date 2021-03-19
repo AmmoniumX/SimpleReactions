@@ -154,17 +154,30 @@ public class bot extends ListenerAdapter{
 
                 break;
             case "setreactionrole":
+                if (reactionMessageId == null){
+                    e.getChannel().sendMessage("Reaction message hasn't been set, do ;setmessage first").queue();
+                    return;
+                }
+
                 if (message.length < 3) {
                     e.getChannel().sendMessage("Not enough arguments, (2) needed").queue();
                     return;
                 }
-                String reactionEmoteString = message[1];
+                String reactionEmoji = message[1];
                 String roleId = message[2].substring(3, message[2].length() - 1);
                 Role reactionRole = e.getGuild().getRoleById(roleId);
                 assert reactionRole != null;
-                System.out.println(reactionEmoteString + ", " + reactionRole.getName());
-                e.getChannel().sendMessage(" Associated " + reactionEmoteString + " to emote " + reactionRole.getAsMention()).queue();
-                emojiToRoleId.put(reactionEmoteString, reactionRole.getId());
+                System.out.println(reactionEmoji + ", " + reactionRole.getName());
+                e.getChannel().sendMessage(" Associated " + reactionEmoji + " to emote " + reactionRole.getAsMention()).queue();
+
+                if(emojiToRoleId.containsKey(reactionEmoji)){
+                    emojiToRoleId.remove(reactionEmoji);
+                    System.out.println("Removed conflict with same emote association");
+                } else {
+                    e.getChannel().retrieveMessageById(reactionMessageId).complete().addReaction(reactionEmoji).queue();
+                }
+
+                emojiToRoleId.put(reactionEmoji, reactionRole.getId());
 
                 // save emojiToRoleFile to the file
                 String filePath = "./data/emojiToRoleId.txt";
