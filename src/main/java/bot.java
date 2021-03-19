@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
-
 import javax.security.auth.login.LoginException;
 import java.io.*;
 import java.nio.file.Files;
@@ -181,7 +180,6 @@ public class bot extends ListenerAdapter{
                     exception.printStackTrace();
                     System.out.println("Couldn't save emojiToRoleId.txt!");
                 }
-
                 break;
 
             case "setdefaultrole":
@@ -204,15 +202,11 @@ public class bot extends ListenerAdapter{
                     exception.printStackTrace();
                     System.out.println("Couldn't save defaultRoleId.txt!");
                 }
-
-
                 break;
-
 
             default:
                 break;
         }
-
     }
 
     @Override
