@@ -9,5 +9,8 @@
         <module name="ILC_Registration" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="ILC_Registration" target="15" />
+    </bytecodeTargetLevel>
   </component>
 </project>
