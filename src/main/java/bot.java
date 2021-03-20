@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class bot extends ListenerAdapter{
     private static String reactionMessageId;
@@ -173,10 +174,9 @@ public class bot extends ListenerAdapter{
                 if(emojiToRoleId.containsKey(reactionEmoji)){
                     emojiToRoleId.remove(reactionEmoji);
                     System.out.println("Removed conflict with same emote association");
-                } else {
-                    e.getChannel().retrieveMessageById(reactionMessageId).complete().addReaction(reactionEmoji).queue();
                 }
 
+                e.getChannel().retrieveMessageById(reactionMessageId).complete().addReaction(reactionEmoji).queue();
                 emojiToRoleId.put(reactionEmoji, reactionRole.getId());
 
                 // save emojiToRoleFile to the file
@@ -224,6 +224,12 @@ public class bot extends ListenerAdapter{
 
     @Override
     public void onMessageReactionAdd(@NotNull MessageReactionAddEvent e){
+
+        if(Objects.requireNonNull(e.getUser()).isBot()){
+            System.out.println("Ignored action by bot User");
+            return;
+        }
+
         if(!e.getMessageId().equalsIgnoreCase(reactionMessageId)) {
             System.out.println(e.getMessageId() + " is not active reaction message " + reactionMessageId);
             return;
@@ -254,6 +260,9 @@ public class bot extends ListenerAdapter{
                 System.out.println("Successfully removed role " + defaultRole + " to " + e.getMember().getEffectiveName());
             }
         }
+
+        assert e.getUser() != null;
+        e.getReaction().removeReaction(e.getUser()).queue();
 
     }
 }
