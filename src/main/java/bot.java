@@ -257,7 +257,7 @@ public class bot extends ListenerAdapter{
             assert defaultRole != null;
             if (e.getMember().getRoles().contains(defaultRole)) {
                 e.getGuild().removeRoleFromMember(e.getMember(), defaultRole).queue();
-                System.out.println("Successfully removed role " + defaultRole + " to " + e.getMember().getEffectiveName());
+                System.out.println("Successfully removed role " + defaultRole.getName() + " to " + e.getMember().getEffectiveName());
             }
         }
 
