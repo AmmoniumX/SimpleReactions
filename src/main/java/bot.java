@@ -1,7 +1,6 @@
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
@@ -13,10 +12,11 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Objects;
 
 public class bot extends ListenerAdapter{
-    private static ArrayList<String> reactionMessageIds;
     private static String defaultRoleId = null;
     private static HashMap<String, HashMap<String, String>> messageIdToEmojiAndRoleId = new HashMap<>();
 
@@ -42,7 +42,7 @@ public class bot extends ListenerAdapter{
             }
         }
 
-        // look for messageIdToEmojiToRoleId.txt, if it exists, write from it, if it doesn't, create it
+        // look for messageIdToEmojiToRoleId.txt, if it doesn't exist, create it
         String filePath = "./data/messageIdToEmojiToRoleId.txt";
         File emojiToRoleFile = new File(filePath);
         if (!emojiToRoleFile.exists()){
@@ -50,7 +50,7 @@ public class bot extends ListenerAdapter{
             boolean fileCreateSuccess = emojiToRoleFile.createNewFile();
             System.out.println(fileCreateSuccess);
         } else {
-            // this is the code that actually reads messageIdToEmojiToRoleId.txt and writes it to emojiToRoleId
+            // now we can actually read the file
             try {
                 FileInputStream fis = new FileInputStream(emojiToRoleFile);
                 ObjectInputStream ois = new ObjectInputStream(fis);
@@ -77,7 +77,6 @@ public class bot extends ListenerAdapter{
             System.out.println(fileCreateSuccess);
         } else {
             // Since defaultRoleId is just a string, the process is much simpler
-
             try {
                 FileInputStream fis = new FileInputStream(defaultRoleFile);
                 defaultRoleId = new String(fis.readAllBytes());
@@ -89,40 +88,11 @@ public class bot extends ListenerAdapter{
             }
         }
 
-        // and once more for reactionMessageIds.txt
-        String reactionMessagePath = "./data/reactionMessageIds.txt";
-        File reactionMessageFile = new File(reactionMessagePath);
-        if (!reactionMessageFile.exists()){
-            System.out.println("Could not find reactionMessageIds.txt, creating it...");
-            boolean fileCreateSuccess = reactionMessageFile.createNewFile();
-            System.out.println(fileCreateSuccess);
-        } else {
-            try {
-                FileInputStream fis = new FileInputStream(reactionMessageFile);
-                // reactionMessageId = new String(fis.readAllBytes());
-                ObjectInputStream ois = new ObjectInputStream(fis);
-
-                //noinspection unchecked
-                reactionMessageIds = (ArrayList<String>) ois.readObject();
-
-                System.out.println("Reaction message IDs: " + reactionMessageIds);
-                ois.close();
-                fis.close();
-
-            } catch (Exception ex){
-                reactionMessageIds = new ArrayList<>();
-                ex.printStackTrace();
-            }
-        }
-
-
-
-
     }
 
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent e) {
-        System.out.println(e.getMessage().getContentRaw());
+        System.out.println(e.getMessage());
         String[] message = e.getMessage().getContentRaw().split(" ");
         if (!message[0].startsWith(";")) { return;} // only run for commands that start with identificator ";"
 
@@ -133,45 +103,28 @@ public class bot extends ListenerAdapter{
         assert e.getMember() != null;
         switch (message[0].toLowerCase()){
 
-            case "setmessage":
+            case "help":
                 if (!e.getMember().getPermissions().contains(Permission.ADMINISTRATOR)){
                     e.getChannel().sendMessage("You don't have enough permissions to do this.").queue();
                     return;
                 }
-                if (message.length < 3) {
-                    e.getChannel().sendMessage("Not enough arguments, (2) needed").queue();
-                    return;
-                }
-                System.out.println("Setting message as active mesage");
 
-                String thisReactionMessageId = message[2];
-                Message reactionMessage = e.getChannel().retrieveMessageById(thisReactionMessageId).complete();
+                String helpString = """
+                        help: shows this message.
+                        
+                        setreactionerole [messageId] [emoji] [@role]: sets [emoji] in message [messageId] to give role [
+                        @role] when reacted to. Doesn't accept custom emotes!
+                                                
+                        setdefaultrole [@role]: sets [@role] to be removed when reacting. Doesn't actually give the role
+                         when joining!
+                        
+                        listactivemessages: shows a list of all active messages by their Id.
+                        
+                        removeactivemessage [messageId]: deletes all active reaction roles for [messageId].
+                        """;
 
-                if (reactionMessage == null){
-                    e.getChannel().sendMessage("There was an error retrieving that message! Was it written correctly?").queue();
-                    return;
-                }
+                e.getChannel().sendMessage(helpString).queue();
 
-                System.out.println("Successfully set message " + reactionMessage.getContentRaw() + " as reaction message");
-                e.getChannel().sendMessage("Successfully set message " + reactionMessage.getContentRaw() + " as reaction message").queue();
-
-                if (!reactionMessageIds.contains(thisReactionMessageId)) {
-                    reactionMessageIds.add(thisReactionMessageId);
-                }
-
-                // save it to reactionMessageIds.txt
-                String reactionMessagePath = "./data/reactionMessageIds.txt";
-                try{
-                    FileOutputStream fos = new FileOutputStream(reactionMessagePath);
-                    ObjectOutputStream oos = new ObjectOutputStream(fos);
-//                    fos.write(reactionMessageId.getBytes());
-                    oos.writeObject(reactionMessageIds);
-                    oos.close();
-                    fos.close();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    System.out.println("Couldn't save reactionMessageIds.txt!");
-                }
                 break;
 
             case "setreactionrole":
@@ -179,7 +132,7 @@ public class bot extends ListenerAdapter{
                     e.getChannel().sendMessage("You don't have enough permissions to do this.").queue();
                     return;
                 }
-                if (reactionMessageIds.isEmpty()){
+                if (messageIdToEmojiAndRoleId.isEmpty()){
                     e.getChannel().sendMessage("No reaction message has been set, do ;setmessage first").queue();
                     return;
                 }
@@ -202,8 +155,6 @@ public class bot extends ListenerAdapter{
                 e.getChannel().sendMessage(" Associated " + reactionEmoji + " to emote " + reactionRole.getAsMention()).queue();
 
 
-
-                e.getChannel().retrieveMessageById(srrMessageId).complete().addReaction(reactionEmoji).queue();
                 // emojiToRoleId.put(reactionEmoji, reactionRole.getId());
 
                 if(messageIdToEmojiAndRoleId.containsKey(srrMessageId)){
@@ -216,13 +167,13 @@ public class bot extends ListenerAdapter{
                         thisEmojiToRoleId.put(reactionEmoji, roleId);
                     }
                 } else{
+
                     HashMap<String, String> newEmojitoRoleId = new HashMap<>();
                     newEmojitoRoleId.put(reactionEmoji, roleId);
                     messageIdToEmojiAndRoleId.put(srrMessageId, newEmojitoRoleId);
-
-
                 }
 
+                e.getChannel().retrieveMessageById(srrMessageId).complete().addReaction(reactionEmoji).queue();
 
                 // save messageIdToEmojiToRoleId to the file
                 String filePath = "./data/messageIdToEmojiToRoleId.txt";
@@ -286,7 +237,6 @@ public class bot extends ListenerAdapter{
 
                 messageIdToEmojiAndRoleId.remove(messageToRemove);
                 e.getChannel().sendMessage("Successfully removed from active messages").queue();
-
                 break;
 
             default:
@@ -303,7 +253,7 @@ public class bot extends ListenerAdapter{
             return;
         }
 
-        if(!reactionMessageIds.contains(e.getMessageId())) {
+        if(!messageIdToEmojiAndRoleId.containsKey(e.getMessageId())) {
             System.out.println(e.getMessageId() + " is not an active reaction message.");
             return;
         }
