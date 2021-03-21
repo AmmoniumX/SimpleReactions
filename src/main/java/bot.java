@@ -112,7 +112,7 @@ public class bot extends ListenerAdapter{
                 String helpString = """
                         help: shows this message.
                         
-                        setreactionerole [messageId] [emoji] [@role]: sets [emoji] in message [messageId] to give role [
+                        setreactionrole [messageId] [emoji] [@role]: sets [emoji] in message [messageId] to give role [
                         @role] when reacted to. Doesn't accept custom emotes!
                                                 
                         setdefaultrole [@role]: sets [@role] to be removed when reacting. Doesn't actually give the role
@@ -132,10 +132,6 @@ public class bot extends ListenerAdapter{
                     e.getChannel().sendMessage("You don't have enough permissions to do this.").queue();
                     return;
                 }
-                if (messageIdToEmojiAndRoleId.isEmpty()){
-                    e.getChannel().sendMessage("No reaction message has been set, do ;setmessage first").queue();
-                    return;
-                }
 
                 if (message.length < 4) {
                     e.getChannel().sendMessage("Not enough arguments, (3) needed").queue();
@@ -152,7 +148,8 @@ public class bot extends ListenerAdapter{
                 }
 
                 System.out.println(reactionEmoji + ", " + reactionRole.getName());
-                e.getChannel().sendMessage(" Associated " + reactionEmoji + " to emote " + reactionRole.getAsMention()).queue();
+                e.getChannel().sendMessage(" Associated " + reactionEmoji + " to emote " + reactionRole.getAsMention() +
+                " on message " + srrMessageId).queue();
 
 
                 // emojiToRoleId.put(reactionEmoji, reactionRole.getId());
