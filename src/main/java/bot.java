@@ -109,19 +109,14 @@ public class bot extends ListenerAdapter{
                     return;
                 }
 
-                String helpString = """
-                        help: shows this message.
-                        
-                        setreactionrole [messageId] [emoji] [@role]: sets [emoji] in message [messageId] to give role [
-                        @role] when reacted to. Doesn't accept custom emotes!
-                                                
-                        setdefaultrole [@role]: sets [@role] to be removed when reacting. Doesn't actually give the role
-                         when joining!
-                        
-                        listactivemessages: shows a list of all active messages by their Id.
-                        
-                        removeactivemessage [messageId]: deletes all active reaction roles for [messageId].
-                        """;
+                String helpString = "help: shows this message. \n " +
+                        "setreactionrole [messageId] [emoji] [@role]: sets [emoji] in message [messageId] to give role [" +
+                        "@role] when reacted to. Doesn't accept custom emotes! \n" +
+                        "setdefaultrole [@role]: sets [@role] to be removed when reacting. Doesn't actually give the role " +
+                        "when joining! \n" +
+                        "listactivemessages: shows a list of all active messages by their Id. \n" +
+                        "removeactivemessage [messageId]: deletes all active reaction roles for [messageId]."
+                        ;
 
                 e.getChannel().sendMessage(helpString).queue();
 
