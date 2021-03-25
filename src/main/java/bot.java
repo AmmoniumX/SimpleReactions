@@ -1,3 +1,4 @@
+import com.sun.net.httpserver.HttpServer;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
@@ -9,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.security.auth.login.LoginException;
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -88,6 +90,19 @@ public class bot extends ListenerAdapter{
                 ex.printStackTrace();
             }
         }
+
+        HttpServer server = null;
+        try {
+            server = HttpServer.create(new InetSocketAddress(8080), 5);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert server != null;
+        server.createContext("/", new keepalive());
+        server.setExecutor(null); // creates a default executor
+        System.out.println("Starting server...");
+        server.start();
+
 
     }
 
