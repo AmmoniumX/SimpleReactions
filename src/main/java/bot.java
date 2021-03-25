@@ -49,7 +49,8 @@ public class bot extends ListenerAdapter{
             System.out.println("Could not find messageIdToEmojiToRoleId.txt, creating it...");
             boolean fileCreateSuccess = emojiToRoleFile.createNewFile();
             System.out.println(fileCreateSuccess);
-        } else {
+
+        } else if (emojiToRoleFile.length() > 0){
             // now we can actually read the file
             try {
                 FileInputStream fis = new FileInputStream(emojiToRoleFile);
@@ -75,7 +76,7 @@ public class bot extends ListenerAdapter{
             System.out.println("Could not find defaultRoleId.txt, creating it...");
             boolean fileCreateSuccess = defaultRoleFile.createNewFile();
             System.out.println(fileCreateSuccess);
-        } else {
+        } else if (defaultRoleFile.length() > 0){
             // Since defaultRoleId is just a string, the process is much simpler
             try {
                 FileInputStream fis = new FileInputStream(defaultRoleFile);
