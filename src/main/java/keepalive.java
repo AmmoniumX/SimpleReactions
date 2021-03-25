@@ -18,8 +18,8 @@ public class keepalive implements HttpHandler {
         int a = 0;
         while (a != -1) {
             a = is.read(b);
-
         }
+        is.close();
         System.out.println("This is the request: " + new String(b));
 
         String response = "<?xml version='1.0'?><root-node></root-node>";
