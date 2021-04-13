@@ -1,4 +1,3 @@
-import com.sun.net.httpserver.HttpServer;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
@@ -10,11 +9,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.security.auth.login.LoginException;
 import java.io.*;
-import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -39,7 +36,7 @@ public class bot extends ListenerAdapter{
             try {
                 Files.createDirectory(path);
             } catch (Exception ex) {
-                System.out.println("Error caught during attempt to create ./data/ directory:");
+                System.out.println("Exception caught during attempt to create ./data/ directory:");
                 ex.printStackTrace();
             }
         }
@@ -91,19 +88,6 @@ public class bot extends ListenerAdapter{
             }
         }
 
-        HttpServer server = null;
-        try {
-            server = HttpServer.create(new InetSocketAddress(8080), 5);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        assert server != null;
-        server.createContext("/", new keepalive());
-        server.setExecutor(null); // creates a default executor
-        System.out.println("Starting server...");
-        server.start();
-
-
     }
 
     @Override
@@ -111,10 +95,7 @@ public class bot extends ListenerAdapter{
         System.out.println(e.getMessage());
         String[] message = e.getMessage().getContentRaw().split(" ");
         if (!message[0].startsWith(";")) { return;} // only run for commands that start with identificator ";"
-
         message[0] = message[0].substring(1); // remove identificator for searching commands
-
-        System.out.println(Arrays.toString(message));
 
         assert e.getMember() != null;
         switch (message[0].toLowerCase()){
