@@ -13,7 +13,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.Objects;
 
 public class bot extends ListenerAdapter{
     private static String defaultRoleId = null;
@@ -143,9 +142,6 @@ public class bot extends ListenerAdapter{
                 e.getChannel().sendMessage(" Associated " + reactionEmoji + " to emote " + reactionRole.getAsMention() +
                 " on message " + srrMessageId).queue();
 
-
-                // emojiToRoleId.put(reactionEmoji, reactionRole.getId());
-
                 if(messageIdToEmojiAndRoleId.containsKey(srrMessageId)){
                     HashMap<String, String> thisEmojiToRoleId = messageIdToEmojiAndRoleId.get(srrMessageId);
                     if(thisEmojiToRoleId.containsKey(reactionEmoji)) {
@@ -237,7 +233,8 @@ public class bot extends ListenerAdapter{
     public void onMessageReactionAdd(@NotNull MessageReactionAddEvent e){
 
         assert e.getMember() != null;
-        if(Objects.requireNonNull(e.getUser()).isBot()){
+        assert e.getUser() != null;
+        if(e.getUser().isBot()){
             System.out.println("Ignored action by bot User");
             return;
         }
@@ -276,7 +273,6 @@ public class bot extends ListenerAdapter{
             }
         }
 
-        assert e.getUser() != null;
         e.getReaction().removeReaction(e.getUser()).queue();
 
     }
