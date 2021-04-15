@@ -163,9 +163,11 @@ public class bot extends ListenerAdapter{
                     messageIdToEmojiAndRoleId.put(srrMessageId, newEmojitoRoleId);
                 }
 
-                // e.getChannel().retrieveMessageById(srrMessageId).complete().addReaction(reactionEmoji).queue();
                 MessageChannel msgChannel = (MessageChannel) e.getGuild().getGuildChannelById(srrChannelId);
-                assert msgChannel != null;
+                if (msgChannel == null) {
+                   e.getChannel().sendMessage("Could not recognize that message ID! Was it written correctly?").queue();
+                   return;
+                }
                 msgChannel.retrieveMessageById(srrMessageId).complete().addReaction(reactionEmoji).queue();
 
                 // save messageIdToEmojiToRoleId to the file
@@ -195,7 +197,12 @@ public class bot extends ListenerAdapter{
                 }
                 defaultRoleId = message[1].substring(3, message[1].length() - 1);
                 Role defaultRole = e.getGuild().getRoleById(defaultRoleId);
-                assert defaultRole != null;
+
+                if (defaultRole == null) {
+                    e.getChannel().sendMessage("Could not recognize role. Was it written correctly?").queue();
+                    return;
+                }
+
                 e.getChannel().sendMessage("Set " + defaultRole.getAsMention() + " as default role").queue();
 
                 // save defaultRoleId to the file
