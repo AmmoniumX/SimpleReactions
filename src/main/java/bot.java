@@ -1,6 +1,7 @@
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
@@ -105,7 +106,7 @@ public class bot extends ListenerAdapter{
                     return;
                 }
 
-                String helpString = "help: shows this message. \n " +
+                String helpString = "help: shows this message. \n" +
                         "setreactionrole [messageId] [emoji] [@role]: sets [emoji] in message [messageId] to give role [" +
                         "@role] when reacted to. Doesn't accept custom emotes! \n" +
                         "setdefaultrole [@role]: sets [@role] to be removed when reacting. Doesn't actually give the role " +
@@ -128,7 +129,10 @@ public class bot extends ListenerAdapter{
                     e.getChannel().sendMessage("Not enough arguments, (3) needed").queue();
                     return;
                 }
-                String srrMessageId = message[1];
+                String srrFullMessageId = message[1];
+                String srrMessageId = srrFullMessageId.substring(19);
+                String srrChannelId = srrFullMessageId.substring(0, 18);
+                System.out.println("Channel ID: " + srrChannelId + ", message ID: " + srrMessageId);
                 String reactionEmoji = message[2];
                 java.lang.String roleId = message[3].substring(3, message[3].length() - 1);
                 Role reactionRole = e.getGuild().getRoleById(roleId);
@@ -158,7 +162,10 @@ public class bot extends ListenerAdapter{
                     messageIdToEmojiAndRoleId.put(srrMessageId, newEmojitoRoleId);
                 }
 
-                e.getChannel().retrieveMessageById(srrMessageId).complete().addReaction(reactionEmoji).queue();
+                // e.getChannel().retrieveMessageById(srrMessageId).complete().addReaction(reactionEmoji).queue();
+                MessageChannel msgChannel = (MessageChannel) e.getGuild().getGuildChannelById(srrChannelId);
+                assert msgChannel != null;
+                msgChannel.retrieveMessageById(srrMessageId).complete().addReaction(reactionEmoji).queue();
 
                 // save messageIdToEmojiToRoleId to the file
                 String filePath = "./data/messageIdToEmojiToRoleId.txt";
