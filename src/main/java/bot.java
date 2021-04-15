@@ -211,12 +211,20 @@ public class bot extends ListenerAdapter{
                 break;
 
             case "listactivemessages":
+                if (!e.getMember().getPermissions().contains(Permission.ADMINISTRATOR)){
+                    e.getChannel().sendMessage("You don't have enough permissions to do this.").queue();
+                    return;
+                }
                 String activemessagesString = messageIdToEmojiAndRoleId.keySet().toString();
                 System.out.println(activemessagesString);
                 e.getChannel().sendMessage(activemessagesString).queue();
                 break;
 
             case "removeactivemessage":
+                if (!e.getMember().getPermissions().contains(Permission.ADMINISTRATOR)){
+                    e.getChannel().sendMessage("You don't have enough permissions to do this.").queue();
+                    return;
+                }
                 if(message.length < 2) {
                     e.getChannel().sendMessage("Not enough arguments, (1) needed").queue();
                     return;
