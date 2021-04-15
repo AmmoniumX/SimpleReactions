@@ -92,9 +92,10 @@ public class bot extends ListenerAdapter{
 
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent e) {
-        System.out.println(e.getMessage());
+
         String[] message = e.getMessage().getContentRaw().split(" ");
         if (!message[0].startsWith(";")) { return;} // only run for commands that start with identificator ";"
+        System.out.println(e.getMessage());
         message[0] = message[0].substring(1); // remove identificator for searching commands
 
         assert e.getMember() != null;
