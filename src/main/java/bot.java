@@ -15,9 +15,52 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
+
+
 public class bot extends ListenerAdapter{
     private static HashMap<String, HashMap<String, String>> messageIdToEmojiAndRoleId = new HashMap<>();
     private static HashMap<String, String> messageIdToRemovalRoleId = new HashMap<>();
+
+    void saveMessageIdToEmojiAndRoleId(HashMap<String, HashMap<String, String>> messageIdToEmojiAndRoleId) {
+        // save messageIdToEmojiToRoleId to the file
+        String filePath = "./data/messageIdToEmojiToRoleId.data";
+        File emojiToRoleFile = new File(filePath);
+
+        try {
+            FileOutputStream fos = new FileOutputStream(emojiToRoleFile, false);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(messageIdToEmojiAndRoleId);
+            oos.close();
+            fos.close();
+
+            System.out.println("Saved messageIdToEmojiToRoleId.data");
+
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            System.out.println("Couldn't save messageIdToEmojiToRoleId.data!");
+        }
+    }
+
+    void saveMessageIdToRemovalRoleId(HashMap<String, String> messageIdToRemovalRoleId) {
+        // save messageIdToRemovalRoleId to the file
+        String filePath2 = "./data/messageIdToRemovalRoleId.data";
+        File messageIdToRemovalRoleIdFile = new File(filePath2);
+
+        try {
+            FileOutputStream fos = new FileOutputStream(messageIdToRemovalRoleIdFile, false);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(messageIdToRemovalRoleId);
+            oos.close();
+            fos.close();
+
+            System.out.println("Saved messageIdToRemovalRoleId.data");
+
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            System.out.println("Couldn't save messageIdToRemovalRoleId.data!");
+        }
+    }
+
 
     public static void main(String[] args) throws LoginException, InterruptedException, IOException {
         JDA jda = JDABuilder.createDefault("ODM0NTg3OTE1NDI1ODA4NDI0.YIDEkA.3dU_OaTKLmHe2ulOFeu7jXC0_QE").build().awaitReady();
@@ -184,20 +227,7 @@ public class bot extends ListenerAdapter{
                 }
                 msgChannel.retrieveMessageById(srrMessageId).complete().addReaction(reactionEmoji).queue();
 
-                // save messageIdToEmojiToRoleId to the file
-                String filePath = "./data/messageIdToEmojiToRoleId.data";
-                File emojiToRoleFile = new File(filePath);
-
-                try {
-                    FileOutputStream fos = new FileOutputStream(emojiToRoleFile, false);
-                    ObjectOutputStream oos = new ObjectOutputStream(fos);
-                    oos.writeObject(messageIdToEmojiAndRoleId);
-                    oos.close();
-                    fos.close();
-                } catch (Exception exception) {
-                    exception.printStackTrace();
-                    System.out.println("Couldn't save messageIdToRoleId.data!");
-                }
+                saveMessageIdToEmojiAndRoleId(messageIdToEmojiAndRoleId);
                 break;
 
             case "listactivemessages":
@@ -241,35 +271,8 @@ public class bot extends ListenerAdapter{
                 
                 e.getChannel().sendMessage("Successfully removed from active messages").queue();
 
-                // save messageIdToEmojiToRoleId to the file
-                String ramFilePath = "./data/messageIdToEmojiToRoleId.data";
-                File ramEmojiToRoleFile = new File(ramFilePath);
-
-                try {
-                    FileOutputStream fos = new FileOutputStream(ramEmojiToRoleFile, false);
-                    ObjectOutputStream oos = new ObjectOutputStream(fos);
-                    oos.writeObject(messageIdToEmojiAndRoleId);
-                    oos.close();
-                    fos.close();
-                } catch (Exception exception) {
-                    exception.printStackTrace();
-                    System.out.println("Couldn't save messageIdToEmojiToRoleId.data!");
-                }
-
-                // save messageIdToRemovalRoleId to the file
-                String filePath2 = "./data/messageIdToRemovalRoleId.data";
-                File messageIdToRemovalRoleIdFile = new File(filePath2);
-
-                try {
-                    FileOutputStream fos = new FileOutputStream(messageIdToRemovalRoleIdFile, false);
-                    ObjectOutputStream oos = new ObjectOutputStream(fos);
-                    oos.writeObject(messageIdToRemovalRoleId);
-                    oos.close();
-                    fos.close();
-                } catch (Exception exception) {
-                    exception.printStackTrace();
-                    System.out.println("Couldn't save messageIdToRemovalRoleId.data!");
-                }
+                saveMessageIdToEmojiAndRoleId(messageIdToEmojiAndRoleId);
+                saveMessageIdToRemovalRoleId(messageIdToRemovalRoleId);
                 
                 break;
 
@@ -304,20 +307,7 @@ public class bot extends ListenerAdapter{
                 e.getChannel().sendMessage("Successfully associated active message " + rrMessageId + "to removal role " +
                 removalRole.getAsMention()).queue();
 
-                // save messageIdToRemovalRoleId to the file
-                filePath2 = "./data/messageIdToRemovalRoleId.data";
-                messageIdToRemovalRoleIdFile = new File(filePath2);
-
-                try {
-                    FileOutputStream fos = new FileOutputStream(messageIdToRemovalRoleIdFile, false);
-                    ObjectOutputStream oos = new ObjectOutputStream(fos);
-                    oos.writeObject(messageIdToRemovalRoleId);
-                    oos.close();
-                    fos.close();
-                } catch (Exception exception) {
-                    exception.printStackTrace();
-                    System.out.println("Couldn't save messageIdToRemovalRoleId.data!");
-                }
+                saveMessageIdToRemovalRoleId(messageIdToRemovalRoleId);
                 break;
 
             case "removeremovalrole":
@@ -339,20 +329,7 @@ public class bot extends ListenerAdapter{
 
                 messageIdToRemovalRoleId.remove(removalMessageId);
 
-                // save messageIdToRemovalRoleId to the file
-                filePath2 = "./data/messageIdToRemovalRoleId.data";
-                messageIdToRemovalRoleIdFile = new File(filePath2);
-
-                try {
-                    FileOutputStream fos = new FileOutputStream(messageIdToRemovalRoleIdFile, false);
-                    ObjectOutputStream oos = new ObjectOutputStream(fos);
-                    oos.writeObject(messageIdToRemovalRoleId);
-                    oos.close();
-                    fos.close();
-                } catch (Exception exception) {
-                    exception.printStackTrace();
-                    System.out.println("Couldn't save messageIdToRemovalRoleId.data!");
-                }
+                saveMessageIdToRemovalRoleId(messageIdToRemovalRoleId);
                 break;
 
             default:
@@ -406,7 +383,7 @@ public class bot extends ListenerAdapter{
 
             if (e.getMember().getRoles().contains(removalRole)) {
                 e.getGuild().removeRoleFromMember(e.getMember(), removalRole).queue();
-                System.out.println("Removed role " + removalRoleId + " from " + e.getMember().getEffectiveName());
+                System.out.println("Removed role " + removalRole.getName() + " from " + e.getMember().getEffectiveName());
             }
 
         }
