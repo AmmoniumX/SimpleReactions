@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="ILC_Registration" target="15" />
+      <module name="ILC_Registration" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>
