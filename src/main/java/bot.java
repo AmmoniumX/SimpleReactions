@@ -261,7 +261,7 @@ public class bot extends ListenerAdapter{
                 String ramFullMessageId = message[1];
 
                 if(!messageIdToEmojiAndRoleId.containsKey(ramFullMessageId)) {
-                    e.getChannel().sendMessage("That's not an active message (check ;listactivemessages").queue();
+                    e.getChannel().sendMessage("That's not an active message (check ;listactivemessages)").queue();
                     return;
                 }
 
@@ -304,7 +304,7 @@ public class bot extends ListenerAdapter{
                 messageIdToRemovalRoleId.remove(rrMessageId);
                 messageIdToRemovalRoleId.put(rrMessageId, rrRoleId);
 
-                e.getChannel().sendMessage("Successfully associated active message " + rrMessageId + "to removal role " +
+                e.getChannel().sendMessage("Successfully associated active message " + rrMessageId + " to removal role " +
                 removalRole.getAsMention()).queue();
 
                 saveMessageIdToRemovalRoleId(messageIdToRemovalRoleId);
@@ -367,7 +367,7 @@ public class bot extends ListenerAdapter{
         HashMap<String, String> emojiToRoleId = messageIdToEmojiAndRoleId.get(fullMessageId);
 
         if(!emojiToRoleId.containsKey(reactionEmote)) {
-            System.out.println("Emote " + reactionEmote + "isn't registered as a reaction emote for this message");
+            System.out.println("Emote " + reactionEmote + " isn't registered as a reaction emote for this message");
             return;
         }
 
