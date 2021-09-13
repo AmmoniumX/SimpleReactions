@@ -210,9 +210,9 @@ public class bot extends ListenerAdapter{
                         thisEmojiToRoleId.remove(reactionEmoji);
                         System.out.println("Removed conflict with same emote association");
 
-                    } else {
-                        thisEmojiToRoleId.put(reactionEmoji, roleId);
                     }
+                    thisEmojiToRoleId.put(reactionEmoji, roleId);
+                    
                 } else{
 
                     HashMap<String, String> newEmojitoRoleId = new HashMap<>();
